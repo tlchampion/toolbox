@@ -1,3 +1,7 @@
+from sklearn.metrics import roc_auc_score
+import os
+import zipfile
+from sklearn.metrics import accuracy_score, precision_recall_fscore_support
 from sklearn.preprocessing import ColumnTransformer
 import itertools
 import matplotlib.pyplot as plt
@@ -114,30 +118,31 @@ def make_confusion_matrix(y_true, y_pred, classes=None, figsize=(10, 10), text_s
 
 
 def pred_and_plot(model, filename, class_names):
-  """
-  Imports an image located at filename, makes a prediction on it with
-  a trained model and plots the image with the predicted class as the title.
-  """
-  # Import the target image and preprocess it
-  img = load_and_prep_image(filename)
+    """
+    Imports an image located at filename, makes a prediction on it with
+    a trained model and plots the image with the predicted class as the title.
+    """
+    # Import the target image and preprocess it
+    img = load_and_prep_image(filename)
 
-  # Make a prediction
-  pred = model.predict(tf.expand_dims(img, axis=0))
+    # Make a prediction
+    pred = model.predict(tf.expand_dims(img, axis=0))
 
-  # Get the predicted class
-  if len(pred[0]) > 1:  # check for multi-class
-    # if more than one output, take the max
-    pred_class = class_names[pred.argmax()]
-  else:
-    # if only one output, round
-    pred_class = class_names[int(tf.round(pred)[0][0])]
+    # Get the predicted class
+    if len(pred[0]) > 1:  # check for multi-class
+      # if more than one output, take the max
+      pred_class = class_names[pred.argmax()]
+    else:
+      # if only one output, round
+      pred_class = class_names[int(tf.round(pred)[0][0])]
 
-  # Plot the image and predicted class
-  plt.imshow(img)
-  plt.title(f"Prediction: {pred_class}")
-  plt.axis(False);
+    # Plot the image and predicted class
+    plt.imshow(img)
+    plt.title(f"Prediction: {pred_class}")
+    plt.axis(False);
 
- def plot_loss_curves(history):
+
+def plot_loss_curves(history):
    """
    Returns separate loss curves for training and validation metrics.
 
@@ -167,7 +172,8 @@ def pred_and_plot(model, filename, class_names):
    plt.xlabel('Epochs')
    plt.legend();
 
- def compare_historys(original_history, new_history, initial_epochs=5):
+
+def compare_historys(original_history, new_history, initial_epochs=5):
      """
      Compares two TensorFlow model History objects.
 
@@ -197,7 +203,7 @@ def pred_and_plot(model, filename, class_names):
      plt.plot(total_acc, label='Training Accuracy')
      plt.plot(total_val_acc, label='Validation Accuracy')
      plt.plot([initial_epochs-1, initial_epochs-1],
-               plt.ylim(), label='Start Fine Tuning') # reshift plot around epochs
+               plt.ylim(), label='Start Fine Tuning')  # reshift plot around epochs
      plt.legend(loc='lower right')
      plt.title('Training and Validation Accuracy')
 
@@ -205,13 +211,12 @@ def pred_and_plot(model, filename, class_names):
      plt.plot(total_loss, label='Training Loss')
      plt.plot(total_val_loss, label='Validation Loss')
      plt.plot([initial_epochs-1, initial_epochs-1],
-               plt.ylim(), label='Start Fine Tuning') # reshift plot around epochs
+               plt.ylim(), label='Start Fine Tuning')  # reshift plot around epochs
      plt.legend(loc='upper right')
      plt.title('Training and Validation Loss')
      plt.xlabel('epoch')
      plt.show()
 
-import zipfile
 
 def unzip_data(filename):
   """
@@ -224,7 +229,6 @@ def unzip_data(filename):
   zip_ref.extractall()
   zip_ref.close()
 
-import os
 
 def walk_through_dir(dir_path):
   """
@@ -240,11 +244,9 @@ def walk_through_dir(dir_path):
       name of each subdirectory
   """
   for dirpath, dirnames, filenames in os.walk(dir_path):
-    print(f"There are {len(dirnames)} directories and {len(filenames)} images in '{dirpath}'.")
+    print(
+        f"There are {len(dirnames)} directories and {len(filenames)} images in '{dirpath}'.")
 
-
-
-from sklearn.metrics import accuracy_score, precision_recall_fscore_support
 
 def calculate_results(y_true, y_pred):
   """
@@ -259,15 +261,16 @@ def calculate_results(y_true, y_pred):
   # Calculate model accuracy
   model_accuracy = accuracy_score(y_true, y_pred) * 100
   # Calculate model precision, recall and f1 score using "weighted average
-  model_precision, model_recall, model_f1, _ = precision_recall_fscore_support(y_true, y_pred, average="weighted")
+  model_precision, model_recall, model_f1, _ = precision_recall_fscore_support(
+      y_true, y_pred, average="weighted")
   model_results = {"accuracy": model_accuracy,
                   "precision": model_precision,
                   "recall": model_recall,
                   "f1": model_f1}
   return model_results
 
-from sklearn.metrics import roc_auc_score
- def calculate_results_with_auc(y_true, y_pred):
+
+def calculate_results_with_auc(y_true, y_pred):
    """
    Calculates model accuracy, precision, recall, f1 score and AUC-ROC score of a binary classification model. Model must have predict_proba
 
@@ -282,8 +285,9 @@ from sklearn.metrics import roc_auc_score
    # Calculate model precision, recall and f1 score using "weighted average
    model_precision, model_recall, model_f1, _ = precision_recall_fscore_support(y_true, y_pred, average="weighted
    # Calculate model AUC-ROC score with weighted average and one-vers-rest method
-   model_auc = roc_auc_score(y_true, y_pred, average='weighted', multi_class="ovr")
-   model_results = {"accuracy": model_accuracy,
+   model_auc=roc_auc_score(
+       y_true, y_pred, average='weighted', multi_class="ovr")
+   model_results={"accuracy": model_accuracy,
                    "precision": model_precision,
                    "recall": model_recall,
                    "f1": model_f1,
@@ -301,12 +305,12 @@ def calc_regression_scores(ytrue, ypred):
 
     Returns a dictionary of RMSLE, RMSE, MAE, R-Square and Explained Variance
     """
-  rmsle = mean_squared_log_error(ytrue, ypred, squared=False)
-  rmse = mean_squared_error(ytrue, ypred, squared=False)
-  mae = mean_absolute_error(ytrue,ypred)
-  r2 = r2_score(ytrue,ypred)
-  ev = explained_variance_score(ytrue,ypred)
-  results = {"rmsle": rmsle,
+  rmsle=mean_squared_log_error(ytrue, ypred, squared=False)
+  rmse=mean_squared_error(ytrue, ypred, squared=False)
+  mae=mean_absolute_error(ytrue, ypred)
+  r2=r2_score(ytrue, ypred)
+  ev=explained_variance_score(ytrue, ypred)
+  results={"rmsle": rmsle,
              "rmse": rmse,
              "mae": mae,
              "r2": r2,
