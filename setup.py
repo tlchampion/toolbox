@@ -15,7 +15,5 @@ setuptools.setup(
         "Bug Tracker": "https://github.com/tlchampion/toolbox/issues"
     },
     license='MIT',
-    packages=['toolbox'],
-    install_requires=['os', 'scikit-learn', 'pandas',
-                      'numpy', 'path', 'itertools', 'matplotlib', 'zipfile']
+    packages=['toolbox']
 )
